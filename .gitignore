@@ -2,6 +2,7 @@ HELP.md
 .mvn/**
 ./mvnw
 ./mvnw.cmd
+**.bin
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
