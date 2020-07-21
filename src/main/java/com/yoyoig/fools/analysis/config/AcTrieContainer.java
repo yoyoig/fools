@@ -20,7 +20,6 @@ import java.util.Map;
 @Component
 public class AcTrieContainer {
 
-
     private static final Map<String, AcTrie> AC_TRIE_MAP = new HashMap<>(8);
 
     public AcTrieContainer() {
@@ -32,6 +31,11 @@ public class AcTrieContainer {
         return AC_TRIE_MAP.get(type);
     }
 
+    /**
+     * 初始化标签块级删除ACTire
+     *
+     * @return
+     */
     private AcTrie initSectionAcTire() {
         AcTrie acTrie = new AcTrie();
         HtmlTagSectionEnum[] values = HtmlTagSectionEnum.values();
@@ -43,6 +47,11 @@ public class AcTrieContainer {
         return acTrie;
     }
 
+    /**
+     * 初始化标签删除ACTire
+     *
+     * @return
+     */
     private AcTrie initHtmlTagAcTire() {
         AcTrie acTrie = new AcTrie();
         HtmlTagEnum[] values = HtmlTagEnum.values();
@@ -50,11 +59,11 @@ public class AcTrieContainer {
             acTrie.insert(value.getStart());
             acTrie.insert(value.getEnd());
         }
-
         HtmlTagOneEnum[] oneEnums = HtmlTagOneEnum.values();
         for (HtmlTagOneEnum value : oneEnums) {
             acTrie.insert(value.getTag());
         }
+        // 尾标签
         acTrie.insert(">");
         acTrie.buildFailurePointer();
         return acTrie;
