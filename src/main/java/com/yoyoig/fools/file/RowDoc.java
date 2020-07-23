@@ -10,20 +10,20 @@ package com.yoyoig.fools.file;
 public class RowDoc {
 
 
-    public RowDoc(String id, int size, String html) {
+    public RowDoc(Long id, int size, String html) {
         this.id = id;
         this.size = size;
         this.html = html;
     }
 
-    public RowDoc(String id, String url, int size, String html) {
+    public RowDoc(Long id, String url, int size, String html) {
         this.url = url;
         this.id = id;
         this.size = size;
         this.html = html;
     }
 
-    private String id;
+    private Long id;
 
     private String url;
 
@@ -39,11 +39,11 @@ public class RowDoc {
         this.url = url;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -75,7 +75,7 @@ public class ChAcTire {
      */
     public List<String> matchAll(char[] text) {
         // text是主串
-        List<String> matchResults = new ArrayList<>();
+        List<String> matchResults = new LinkedList<>();
         ChTrieNode parent = root;
         for (int i = 0; i < text.length; ++i) {
             while (parent.getChild(text[i]) == null && parent != root) {

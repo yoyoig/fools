@@ -1,5 +1,7 @@
 package com.yoyoig.fools.crawl;
 
+import com.yoyoig.fools.common.counter.CounterContainer;
+import com.yoyoig.fools.common.counter.IdCounter;
 import com.yoyoig.fools.file.MateDataUtil;
 import com.yoyoig.fools.file.RowDoc;
 import com.yoyoig.fools.file.RowDocFileUtil;
@@ -13,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <p>
@@ -47,6 +48,7 @@ public class DefaultCrawl implements Crawl {
 
     @Override
     public void crawlUrl() {
+        IdCounter docCounter = CounterContainer.get("DOC");
         if (this.urlQueues.size() == 0) {
             this.urlQueues.offerLast(url);
         }
@@ -58,7 +60,7 @@ public class DefaultCrawl implements Crawl {
                 // 获取html
                 String html = NetworkUtil.getContentByUrl(url, restTemplate);
                 // 写入原网页到文件中
-                rowDocList.add(new RowDoc(UUID.randomUUID().toString(), url, html.length(), html));
+                rowDocList.add(new RowDoc(docCounter.getId(), url, html.length(), html));
                 if (rowDocList.size() > 100) {
                     // TODO 暂时先测试 100条
                     break;

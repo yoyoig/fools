@@ -1,11 +1,15 @@
 package com.yoyoig.fools.file;
 
+import com.yoyoig.fools.crawl.Doc;
 import com.yoyoig.fools.crawl.MateData;
+import com.yoyoig.fools.index.domain.TmpIndex;
+import com.yoyoig.fools.index.domain.Word;
 import com.yoyoig.fools.utils.BloomFilter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <p>
@@ -56,6 +60,10 @@ public class MateDataUtil {
             log.info("========= bloom filter queues not exists init bloom filter ... =========");
             mateData.setBloomFilter(new BloomFilter());
         }
+        List<Word> words = IndexFileUtil.readTerm();
+        List<Doc> docs = RowDocFileUtil.readDocId();
+        mateData.setWords(words);
+        mateData.setDocs(docs);
         return mateData;
     }
 

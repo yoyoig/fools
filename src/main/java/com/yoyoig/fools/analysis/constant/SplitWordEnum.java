@@ -7,7 +7,7 @@ package com.yoyoig.fools.analysis.constant;
  *
  * @author mingke.yan@hand-china.com 2020-07-21 8:05 下午
  */
-public enum SpitWordEnum {
+public enum SplitWordEnum {
 
     /** 中文分词库动物 */
     CH_WORD_ANIMAL("THUOCL_animal.txt"),
@@ -44,7 +44,7 @@ public enum SpitWordEnum {
     ;
     private String file;
 
-    SpitWordEnum(String file) {
+    SplitWordEnum(String file) {
         this.file = file;
     }
 

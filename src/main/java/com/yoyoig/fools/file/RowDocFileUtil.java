@@ -1,5 +1,7 @@
 package com.yoyoig.fools.file;
 
+import com.yoyoig.fools.crawl.Doc;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +36,14 @@ public class RowDocFileUtil {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            fileOutputStream = new FileOutputStream(file,true);
+            fileOutputStream = new FileOutputStream(file, true);
             StringBuilder stringBuilder = new StringBuilder();
             for (RowDoc rowDoc : rowDocList) {
                 stringBuilder.append(rowDoc.getId());
                 stringBuilder.append("|");
                 stringBuilder.append(rowDoc.getSize());
                 stringBuilder.append("|");
-                stringBuilder.append(rowDoc.getHtml().replace("\n","").replace("\r",""));
+                stringBuilder.append(rowDoc.getHtml().replace("\n", "").replace("\r", ""));
                 stringBuilder.append("\r\n");
             }
             fileOutputStream.write(stringBuilder.toString().getBytes());
@@ -68,7 +70,7 @@ public class RowDocFileUtil {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            fileOutputStream = new FileOutputStream(file,true);
+            fileOutputStream = new FileOutputStream(file, true);
             StringBuilder stringBuilder = new StringBuilder();
             for (RowDoc rowDoc : rowDocList) {
                 stringBuilder.append(rowDoc.getId());
@@ -99,14 +101,14 @@ public class RowDocFileUtil {
             FileReader fileReader = new FileReader(DOC_RAW_FILE_PATH);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String strRowDoc;
-            while ((strRowDoc = bufferedReader.readLine()) != null){
-                int end1 = strRowDoc.indexOf("|",0) + 1;
-                int end2 = strRowDoc.indexOf("|",end1) + 1;
+            while ((strRowDoc = bufferedReader.readLine()) != null) {
+                int end1 = strRowDoc.indexOf("|", 0) + 1;
+                int end2 = strRowDoc.indexOf("|", end1) + 1;
 
                 String docId = strRowDoc.substring(0, end1 - 1);
                 String size = strRowDoc.substring(end1, end2 - 1);
                 String docContent = strRowDoc.substring(end2);
-                list.add(new RowDoc(docId,Integer.valueOf(size),docContent));
+                list.add(new RowDoc(Long.valueOf(docId), Integer.valueOf(size), docContent));
             }
             bufferedReader.close();
         } catch (Exception e) {
@@ -114,4 +116,29 @@ public class RowDocFileUtil {
         }
         return list;
     }
+
+    /**
+     * 将网页ID和网链读取
+     *
+     * @return
+     */
+    public static List<Doc> readDocId() {
+        List<Doc> list = new ArrayList<>();
+        try {
+            FileReader fileReader = new FileReader(DOC_ID_FILE_PATH);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String strDoc;
+            while ((strDoc = bufferedReader.readLine()) != null) {
+                int end = strDoc.indexOf("|") + 1;
+                String docId = strDoc.substring(0, end - 1);
+                String url = strDoc.substring(end);
+                list.add(new Doc(Long.valueOf(docId), url));
+            }
+            bufferedReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }
