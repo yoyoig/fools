@@ -2,7 +2,6 @@ package com.yoyoig.fools.file;
 
 import com.yoyoig.fools.crawl.Doc;
 import com.yoyoig.fools.crawl.MateData;
-import com.yoyoig.fools.index.domain.TmpIndex;
 import com.yoyoig.fools.index.domain.Word;
 import com.yoyoig.fools.utils.BloomFilter;
 import lombok.extern.slf4j.Slf4j;

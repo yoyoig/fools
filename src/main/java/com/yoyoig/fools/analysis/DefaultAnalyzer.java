@@ -4,6 +4,7 @@ import com.yoyoig.fools.analysis.config.ChAcTireContainer;
 import com.yoyoig.fools.analysis.filter.FilterChain;
 import com.yoyoig.fools.common.counter.CounterContainer;
 import com.yoyoig.fools.common.counter.IdCounter;
+import com.yoyoig.fools.crawl.MateData;
 import com.yoyoig.fools.file.IndexFileUtil;
 import com.yoyoig.fools.file.RowDoc;
 import com.yoyoig.fools.index.domain.TmpIndex;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -27,6 +29,8 @@ public class DefaultAnalyzer implements Analyzer {
 
     @Autowired
     private FilterChain filterChain;
+    @Autowired
+    private MateData mateData;
 
     @Override
     public void analyzer(RowDoc rowDoc) {
@@ -42,6 +46,7 @@ public class DefaultAnalyzer implements Analyzer {
     @Override
     public void splitWord(Long docId, String content) {
         IdCounter wordIdCounter = CounterContainer.get("WORD");
+        Map<String, Long> wordMap = mateData.getWords();
         ChAcTire chAcTire = ChAcTireContainer.get();
         List<String> words = chAcTire.matchAll(content.toCharArray());
         // 单词表
@@ -49,8 +54,12 @@ public class DefaultAnalyzer implements Analyzer {
         // 临时索引
         List<TmpIndex> tmpIndices = new LinkedList<>();
         for (String word : words) {
-            Long wordId = wordIdCounter.getId();
-            wordList.add(new Word(wordId, word));
+            Long wordId = wordMap.get(word);
+            if (wordId == null) {
+                wordId = wordIdCounter.getId();
+                wordList.add(new Word(wordId, word));
+                wordMap.put(word,wordId);
+            }
             tmpIndices.add(new TmpIndex(wordId, docId));
         }
         IndexFileUtil.writeTmpIndex(tmpIndices);

@@ -6,6 +6,8 @@ import com.yoyoig.fools.utils.BloomFilter;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -44,8 +46,8 @@ public class MateData {
         this.docs = docs;
     }
 
-    public List<Word> getWords() {
-        return words;
+    public Map<String, Long> getWords() {
+        return words.stream().collect(Collectors.toMap(Word::getWord, Word::getWordId));
     }
 
     public void setWords(List<Word> words) {
