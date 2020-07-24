@@ -1,14 +1,13 @@
 package com.yoyoig.fools.file;
 
-import com.yoyoig.fools.crawl.Doc;
+import com.yoyoig.fools.index.domain.TermOffset;
 import com.yoyoig.fools.index.domain.TmpIndex;
 import com.yoyoig.fools.index.domain.Word;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -22,9 +21,11 @@ public class IndexFileUtil {
 
     public static final String TMP_INDEX = "tmp_index.bin";
     public static final String TERM_ID = "term_id.bin";
+    public static final String INDEX = "index.bin";
+    public static final String TERM_OFFSET = "term_offset.bin";
 
     public static List<TmpIndex> readTmpIndex() {
-        List<TmpIndex> list = new ArrayList<>();
+        List<TmpIndex> list = new LinkedList<>();
         try {
             FileReader fileReader = new FileReader(TMP_INDEX);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -43,7 +44,7 @@ public class IndexFileUtil {
     }
 
     public static List<Word> readTerm() {
-        List<Word> list = new ArrayList<>();
+        List<Word> list = new LinkedList<>();
         try {
             FileReader fileReader = new FileReader(TERM_ID);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -125,4 +126,61 @@ public class IndexFileUtil {
         }
     }
 
+    public static List<TermOffset> writeIndex(Map<Long, List<TmpIndex>> indexMap) {
+        File file = new File(INDEX);
+        List<TermOffset> termOffsets = new LinkedList<>();
+        FileOutputStream fileOutputStream = null;
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            fileOutputStream = new FileOutputStream(file, true);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Map.Entry<Long, List<TmpIndex>> entry : indexMap.entrySet()) {
+                stringBuilder.append(entry.getKey());
+                stringBuilder.append("|");
+                String docIds = entry.getValue().stream().map(e -> e.getDocId().toString()).collect(Collectors.joining(","));
+                stringBuilder.append(docIds);
+                stringBuilder.append("\r\n");
+                termOffsets.add(new TermOffset(entry.getKey(), stringBuilder.length()));
+            }
+            fileOutputStream.write(stringBuilder.toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return termOffsets;
+    }
+
+    public static void writeTermOffsets(List<TermOffset> termOffsets) {
+        File file = new File(TERM_OFFSET);
+        FileOutputStream fileOutputStream = null;
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            fileOutputStream = new FileOutputStream(file, true);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (TermOffset termOffset : termOffsets) {
+                stringBuilder.append(termOffset.getWordId());
+                stringBuilder.append("|");
+                stringBuilder.append(termOffset.getOffset());
+                stringBuilder.append("\r\n");
+            }
+            fileOutputStream.write(stringBuilder.toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

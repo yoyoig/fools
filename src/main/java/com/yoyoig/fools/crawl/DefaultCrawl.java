@@ -52,7 +52,7 @@ public class DefaultCrawl implements Crawl {
         if (this.urlQueues.size() == 0) {
             this.urlQueues.offerLast(url);
         }
-        List<RowDoc> rowDocList = new ArrayList();
+        List<RowDoc> rowDocList = new LinkedList<>();
         while (urlQueues.size() != 0) {
             String url = urlQueues.pollFirst();
             // 布隆过滤器查询

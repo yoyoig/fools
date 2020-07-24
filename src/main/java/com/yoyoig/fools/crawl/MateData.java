@@ -1,6 +1,5 @@
 package com.yoyoig.fools.crawl;
 
-import com.yoyoig.fools.file.RowDoc;
 import com.yoyoig.fools.index.domain.Word;
 import com.yoyoig.fools.utils.BloomFilter;
 
@@ -38,6 +37,8 @@ public class MateData {
      */
     private List<Doc> docs;
 
+    private Map<String, Long> tmpWord;
+
     public List<Doc> getDocs() {
         return docs;
     }
@@ -47,7 +48,10 @@ public class MateData {
     }
 
     public Map<String, Long> getWords() {
-        return words.stream().collect(Collectors.toMap(Word::getWord, Word::getWordId));
+        if (tmpWord == null) {
+            tmpWord = words.stream().collect(Collectors.toMap(Word::getWord, Word::getWordId));
+        }
+        return tmpWord;
     }
 
     public void setWords(List<Word> words) {

@@ -1,12 +1,10 @@
 package com.yoyoig.fools.api.controller;
 
 import com.yoyoig.fools.analysis.Analyzer;
-import com.yoyoig.fools.analysis.config.ChAcTireContainer;
 import com.yoyoig.fools.crawl.DefaultCrawl;
-import com.yoyoig.fools.crawl.MateData;
 import com.yoyoig.fools.file.RowDoc;
 import com.yoyoig.fools.file.RowDocFileUtil;
-import com.yoyoig.fools.utils.ChAcTire;
+import com.yoyoig.fools.index.service.IndexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,9 +27,9 @@ public class FoolsController {
     @Autowired
     private DefaultCrawl defaultCrawl;
     @Autowired
-    private MateData mateData;
-    @Autowired
     private Analyzer analyzer;
+    @Autowired
+    private IndexService indexService;
 
 
     @PostMapping("/collect")
@@ -50,7 +48,7 @@ public class FoolsController {
 
     @PostMapping("/index")
     public void generateIndex(){
-
+        indexService.generateIndex();
     }
 
     @GetMapping("/search")
