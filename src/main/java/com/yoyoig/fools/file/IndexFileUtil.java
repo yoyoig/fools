@@ -62,6 +62,51 @@ public class IndexFileUtil {
         return list;
     }
 
+    public static List<TermOffset> readTermOffset() {
+        List<TermOffset> list = new LinkedList<>();
+        try {
+            FileReader fileReader = new FileReader(TERM_OFFSET);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String termOffset;
+            while ((termOffset = bufferedReader.readLine()) != null) {
+                int end = termOffset.indexOf("|") + 1;
+                String wordId = termOffset.substring(0, end - 1);
+                String offset = termOffset.substring(end);
+                list.add(new TermOffset(Long.valueOf(wordId), Integer.valueOf(offset)));
+            }
+            bufferedReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * 读取指定位置数据
+     *
+     * @param offset
+     * @return
+     */
+    public static List<Long> readIndexByOffset(Integer offset) {
+        List<Long> docIdList = new ArrayList<>();
+        try {
+            FileReader fileReader = new FileReader(INDEX);
+            fileReader.skip(Long.valueOf(offset));
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String data = bufferedReader.readLine();
+            int end = data.indexOf("|") + 1;
+            String docIds = data.substring(end);
+            String[] split = docIds.split(",");
+            List<String> strings = Arrays.asList(split);
+            List<Long> ids = strings.stream().map(e -> Long.valueOf(e)).collect(Collectors.toList());
+            docIdList.addAll(ids);
+            bufferedReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return docIdList;
+    }
+
     /**
      * 写入临时索引
      *
