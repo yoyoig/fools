@@ -1,8 +1,6 @@
 package com.yoyoig.fools.search.service;
 
-import com.yoyoig.fools.search.domain.SearchResult;
-
-import java.util.List;
+import com.yoyoig.fools.search.domain.Result;
 
 /**
  * <p>
@@ -19,6 +17,6 @@ public interface SearchService {
      * @param query
      * @return
      */
-    List<SearchResult> search(String query);
+    Result search(String query);
 
 }

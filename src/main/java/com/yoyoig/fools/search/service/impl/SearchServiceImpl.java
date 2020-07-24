@@ -5,16 +5,16 @@ import com.yoyoig.fools.crawl.Doc;
 import com.yoyoig.fools.crawl.MateData;
 import com.yoyoig.fools.file.IndexFileUtil;
 import com.yoyoig.fools.index.domain.TermOffset;
+import com.yoyoig.fools.index.domain.Word;
+import com.yoyoig.fools.search.domain.DocWord;
+import com.yoyoig.fools.search.domain.Result;
 import com.yoyoig.fools.search.domain.SearchResult;
 import com.yoyoig.fools.search.service.SearchService;
 import com.yoyoig.fools.utils.ChAcTire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -31,44 +31,52 @@ public class SearchServiceImpl implements SearchService {
     private MateData mateData;
 
     @Override
-    public List<SearchResult> search(String query) {
-        // 获取查询参数wordId
-        List<Long> wordIds = this.getWordIds(query);
-        // 通过 wordId 查找索引偏移位置
-        List<Long> docIds = this.getDocIdsByOffset(wordIds);
-        // 通过docId查找网链
-        return this.getSearchResult(docIds);
-    }
-
-    private List<Long> getWordIds(String query){
-        List<Long> wordIds = new ArrayList<>();
+    public Result search(String query) {
+        Result result = new Result();
         ChAcTire chAcTire = ChAcTireContainer.get();
         List<String> queryWords = chAcTire.matchAll(query.toCharArray());
+        result.setSplitWords(queryWords);
+        // 获取查询参数wordId
+        List<Word> words = this.getWords(queryWords);
+        // 通过 wordId 查找索引偏移位置
+        Map<Long, List<DocWord>> docWordMap = this.getDocIdsByOffset(words);
+        // 通过docId查找网链
+        List<SearchResult> searchResult = this.getSearchResult(docWordMap);
+        result.setSearchResults(searchResult);
+        return result;
+    }
+
+    private List<Word> getWords(List<String> queryWords){
+        List<Word> wordIds = new ArrayList<>();
         Map<String, Long> wordMap = mateData.getWords();
         for (String queryWord : queryWords) {
-            wordIds.add(wordMap.get(queryWord));
+            wordIds.add(new Word(wordMap.get(queryWord), queryWord));
         }
         return wordIds;
     }
 
-    private List<Long> getDocIdsByOffset(List<Long> wordIds){
-        List<Long> docIds = new ArrayList<>();
+    private Map<Long,List<DocWord>> getDocIdsByOffset(List<Word> words){
+        List<DocWord> docWords = new LinkedList<>();
         List<TermOffset> termOffsets = IndexFileUtil.readTermOffset();
         Map<Long, Integer> termOffsetMap = termOffsets.stream().collect(Collectors.toMap(TermOffset::getWordId, TermOffset::getOffset));
-        for (Long wordId : wordIds) {
-            Integer integer = termOffsetMap.get(wordId);
-            docIds.addAll(IndexFileUtil.readIndexByOffset(integer));
+        for (Word word : words) {
+            Integer integer = termOffsetMap.get(word.getWordId());
+            List<Long> docIds = IndexFileUtil.readIndexByOffset(integer);
+            for (Long docId : docIds) {
+                docWords.add(new DocWord(docId, word.getWord()));
+            }
         }
-        return docIds;
+        return docWords.stream().collect(Collectors.groupingBy(DocWord::getDocId));
     }
 
-    private List<SearchResult> getSearchResult(List<Long> docIds){
+    private List<SearchResult> getSearchResult(Map<Long,List<DocWord>> docWordMap){
         List<SearchResult> results = new ArrayList<>();
         List<Doc> docs = mateData.getDocs();
-        Map<Long, List<Long>> docIdCountMap = docIds.stream().collect(Collectors.groupingBy(e -> e));
         Map<Long, String> docMap = docs.stream().collect(Collectors.toMap(Doc::getDocId, Doc::getUrl));
-        for (Map.Entry<Long, List<Long>> entry : docIdCountMap.entrySet()) {
-            results.add(new SearchResult(null, docMap.get(entry.getKey()), entry.getValue().size()));
+        for (Map.Entry<Long, List<DocWord>> entry : docWordMap.entrySet()) {
+            List<String> distinctWords = entry.getValue().stream().map(DocWord::getWord).distinct().collect(Collectors.toList());
+            Integer count = entry.getValue().size() * ((distinctWords.size() - 1) * 10 + 1);
+            results.add(new SearchResult(distinctWords, docMap.get(entry.getKey()), count));
         }
         results.sort(Comparator.comparingInt(SearchResult::getCount).reversed());
         return results;

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,7 +60,7 @@ public class DefaultCrawl implements Crawl {
                 String html = NetworkUtil.getContentByUrl(url, restTemplate);
                 // 写入原网页到文件中
                 rowDocList.add(new RowDoc(docCounter.getId(), url, html.length(), html));
-                if (rowDocList.size() > 100) {
+                if (rowDocList.size() > 1000) {
                     // TODO 暂时先测试 100条
                     break;
                 }
