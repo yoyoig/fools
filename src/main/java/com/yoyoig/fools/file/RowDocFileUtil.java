@@ -1,9 +1,11 @@
 package com.yoyoig.fools.file;
 
 import com.yoyoig.fools.crawl.Doc;
+import sun.awt.image.ImageWatched;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -125,16 +127,19 @@ public class RowDocFileUtil {
     public static List<Doc> readDocId() {
         List<Doc> list = new ArrayList<>();
         try {
-            FileReader fileReader = new FileReader(DOC_ID_FILE_PATH);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String strDoc;
-            while ((strDoc = bufferedReader.readLine()) != null) {
-                int end = strDoc.indexOf("|") + 1;
-                String docId = strDoc.substring(0, end - 1);
-                String url = strDoc.substring(end);
-                list.add(new Doc(Long.valueOf(docId), url));
+            File file = new File(DOC_ID_FILE_PATH);
+            if (file.exists()) {
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String strDoc;
+                while ((strDoc = bufferedReader.readLine()) != null) {
+                    int end = strDoc.indexOf("|") + 1;
+                    String docId = strDoc.substring(0, end - 1);
+                    String url = strDoc.substring(end);
+                    list.add(new Doc(Long.valueOf(docId), url));
+                }
+                bufferedReader.close();
             }
-            bufferedReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

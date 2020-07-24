@@ -27,16 +27,20 @@ public class IndexFileUtil {
     public static List<TmpIndex> readTmpIndex() {
         List<TmpIndex> list = new LinkedList<>();
         try {
-            FileReader fileReader = new FileReader(TMP_INDEX);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String strDoc;
-            while ((strDoc = bufferedReader.readLine()) != null) {
-                int end = strDoc.indexOf("|") + 1;
-                String wordId = strDoc.substring(0, end - 1);
-                String docId = strDoc.substring(end);
-                list.add(new TmpIndex(Long.valueOf(wordId), Long.valueOf(docId)));
+            File file = new File(TMP_INDEX);
+            if (file.exists()) {
+                FileReader fileReader = new FileReader(file);
+
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String strDoc;
+                while ((strDoc = bufferedReader.readLine()) != null) {
+                    int end = strDoc.indexOf("|") + 1;
+                    String wordId = strDoc.substring(0, end - 1);
+                    String docId = strDoc.substring(end);
+                    list.add(new TmpIndex(Long.valueOf(wordId), Long.valueOf(docId)));
+                }
+                bufferedReader.close();
             }
-            bufferedReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,16 +50,19 @@ public class IndexFileUtil {
     public static List<Word> readTerm() {
         List<Word> list = new LinkedList<>();
         try {
-            FileReader fileReader = new FileReader(TERM_ID);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String strDoc;
-            while ((strDoc = bufferedReader.readLine()) != null) {
-                int end = strDoc.indexOf("|") + 1;
-                String wordId = strDoc.substring(0, end - 1);
-                String word = strDoc.substring(end);
-                list.add(new Word(Long.valueOf(wordId), word));
+            File file = new File(TERM_ID);
+            if (file.exists()) {
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String strDoc;
+                while ((strDoc = bufferedReader.readLine()) != null) {
+                    int end = strDoc.indexOf("|") + 1;
+                    String wordId = strDoc.substring(0, end - 1);
+                    String word = strDoc.substring(end);
+                    list.add(new Word(Long.valueOf(wordId), word));
+                }
+                bufferedReader.close();
             }
-            bufferedReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -182,12 +189,13 @@ public class IndexFileUtil {
             fileOutputStream = new FileOutputStream(file, true);
             StringBuilder stringBuilder = new StringBuilder();
             for (Map.Entry<Long, List<TmpIndex>> entry : indexMap.entrySet()) {
+                int offset = stringBuilder.length();
                 stringBuilder.append(entry.getKey());
                 stringBuilder.append("|");
                 String docIds = entry.getValue().stream().map(e -> e.getDocId().toString()).collect(Collectors.joining(","));
                 stringBuilder.append(docIds);
                 stringBuilder.append("\r\n");
-                termOffsets.add(new TermOffset(entry.getKey(), stringBuilder.length()));
+                termOffsets.add(new TermOffset(entry.getKey(), offset));
             }
             fileOutputStream.write(stringBuilder.toString().getBytes());
         } catch (Exception e) {

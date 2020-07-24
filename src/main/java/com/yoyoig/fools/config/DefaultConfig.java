@@ -4,7 +4,7 @@ import com.yoyoig.fools.analysis.filter.IFilter;
 import com.yoyoig.fools.analysis.filter.FilterChain;
 import com.yoyoig.fools.crawl.MateData;
 import com.yoyoig.fools.file.MateDataUtil;
-import org.springframework.beans.BeansException;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +31,11 @@ public class DefaultConfig implements ApplicationContextAware {
     }
 
     @Bean
-    public RestTemplate restTemplateConfig(){
-        return new RestTemplate();
+    public RestTemplate restTemplateConfig(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder
+                .setConnectTimeout(3000)
+                .setReadTimeout(10000)
+                .build();
     }
 
     /**

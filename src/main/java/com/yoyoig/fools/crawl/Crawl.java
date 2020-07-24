@@ -19,6 +19,12 @@ public interface Crawl {
     void crawlUrl();
 
     /**
+     * 爬取入口
+     * @param startUrl
+     */
+    void crawlUrl(String startUrl);
+
+    /**
      * 过滤查询url并存放url
      *
      * @param html

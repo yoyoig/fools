@@ -2,6 +2,8 @@ package com.yoyoig.fools.analysis;
 
 import com.yoyoig.fools.file.RowDoc;
 
+import java.util.List;
+
 /**
  * <p>
  * 数据分析
@@ -14,9 +16,9 @@ public interface Analyzer {
     /**
      * 分析处理
      *
-     * @param rowDoc
+     * @param rowDocs
      */
-    void analyzer(RowDoc rowDoc);
+    void analyzer(List<RowDoc> rowDocs);
 
     /**
      * html 过滤

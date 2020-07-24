@@ -39,10 +39,8 @@ public class FoolsController {
     public void init(){
         defaultCrawl.crawlUrl();
         List<RowDoc> rowDocs = RowDocFileUtil.readRowDoc();
-        for (RowDoc rowDoc : rowDocs) {
-            // 分析
-            analyzer.analyzer(rowDoc);
-        }
+        // 分析
+        analyzer.analyzer(rowDocs);
         indexService.generateIndex();
     }
 
@@ -55,10 +53,7 @@ public class FoolsController {
     @PostMapping("/analysis")
     public void writeDocFile(){
         List<RowDoc> rowDocs = RowDocFileUtil.readRowDoc();
-        for (RowDoc rowDoc : rowDocs) {
-            // 分析
-            analyzer.analyzer(rowDoc);
-        }
+        analyzer.analyzer(rowDocs);
     }
 
     @PostMapping("/index")

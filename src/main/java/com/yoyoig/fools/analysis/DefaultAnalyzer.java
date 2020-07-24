@@ -10,6 +10,7 @@ import com.yoyoig.fools.file.RowDoc;
 import com.yoyoig.fools.index.domain.TmpIndex;
 import com.yoyoig.fools.index.domain.Word;
 import com.yoyoig.fools.utils.ChAcTire;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ import java.util.Map;
  * @author mingke.yan@hand-china.com 2020-04-23 11:13 上午
  */
 @Component
+@Slf4j
 public class DefaultAnalyzer implements Analyzer {
 
     @Autowired
@@ -33,9 +35,13 @@ public class DefaultAnalyzer implements Analyzer {
     private MateData mateData;
 
     @Override
-    public void analyzer(RowDoc rowDoc) {
-        String clearContent = this.filer(rowDoc.getHtml());
-        this.splitWord(rowDoc.getId(), clearContent);
+    public void analyzer(List<RowDoc> rowDocs) {
+        log.info(">>>>>>>>>>>>>>>>>>  start analyzer docs <<<<<<<<<<<<<<<<<<<");
+        for (RowDoc rowDoc : rowDocs) {
+            String clearContent = this.filer(rowDoc.getHtml());
+            this.splitWord(rowDoc.getId(), clearContent);
+        }
+        log.info(">>>>>>>>>>>>>>>>>>  end analyzer docs <<<<<<<<<<<<<<<<<<<");
     }
 
     @Override
